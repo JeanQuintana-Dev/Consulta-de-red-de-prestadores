@@ -11,17 +11,12 @@
  <a class="skip" href="#search">Ir a la búsqueda</a>
  <header class="top"><div class="top-inner"><img src="https://www.fomag.gov.co/wp-content/uploads/2025/04/Logo-color.png" alt="FOMAG" width="168" height="56"><div class="top-title">Red de prestadores<span>Sucre · 2026</span></div></div></header>
  <main>
-  <div class="intro"><div><p class="eyebrow">DIRECTORIO DE ATENCIÓN</p><h1>Encuentra dónde atenderte</h1><p>Consulta el servicio que necesitas y los datos de contacto del prestador.</p></div><div class="network-meta"><span class="status-dot"></span>Red de Sucre</div></div>
-  <nav class="tabs" role="tablist" aria-label="Redes de atención">
-   <button role="tab" id="tab-servicios" aria-controls="panel" aria-selected="true" data-tab="servicios"><span>Servicios por prestador</span><span class="tab-count" id="count-servicios">—</span></button>
-   <button role="tab" id="tab-farmacias" aria-controls="panel" aria-selected="false" tabindex="-1" data-tab="farmacias"><span>Operadores farmacéuticos</span><span class="tab-count" id="count-farmacias">—</span></button>
-   <button role="tab" id="tab-hospitalarios" aria-controls="panel" aria-selected="false" tabindex="-1" data-tab="hospitalarios"><span>Hospitalarios</span><span class="tab-count" id="count-hospitalarios">—</span></button>
-   <button role="tab" id="tab-pgp" aria-controls="panel" aria-selected="false" tabindex="-1" data-tab="pgp"><span>PGP</span><span class="tab-count" id="count-pgp">—</span></button>
-  </nav>
-  <section id="panel" role="tabpanel" aria-labelledby="tab-servicios">
-   <div class="section-heading"><div><h2 id="section-title">Servicios por prestador</h2><p id="section-description">Busca una especialidad, un prestador o un municipio.</p></div><button id="print" class="button secondary" disabled>Imprimir resultados</button></div>
+  <div class="intro"><div><h1>Encuentra tu prestador</h1><p>Busca por servicio, nombre o municipio en toda la red.</p></div></div>
+  <section id="panel" aria-label="Directorio de prestadores">
+   <div class="section-heading"><button id="print" class="button secondary" disabled>Imprimir resultados</button></div>
    <form id="filters" class="filters" role="search">
-    <div class="search-field"><label for="search">¿Qué estás buscando?</label><div class="input-wrap"><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="Ej. odontología, nombre del prestador…" autocomplete="off" disabled></div></div>
+    <div class="category-field"><label for="category">¿Qué necesitas consultar?</label><select id="category"><option value="all">Toda la red</option><option value="servicios">Servicios por prestador</option><option value="farmacias">Medicamentos y farmacias</option><option value="hospitalarios">Atención hospitalaria</option><option value="pgp">PGP</option></select></div>
+    <div class="search-field"><label for="search">¿Qué estás buscando?</label><div class="input-wrap"><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="Ej. odontología, Corozal, nombre del prestador…" autocomplete="off" disabled></div></div>
     <div id="filter-service" class="filter"><label for="service">Servicio</label><select id="service" disabled><option value="">Todos los servicios</option></select></div>
     <div id="filter-type" class="filter"><label for="type">Tipo de servicio</label><select id="type" disabled><option value="">Todos los tipos</option></select></div>
     <div id="filter-municipality" class="filter"><label for="municipality">Municipio o cobertura</label><select id="municipality" disabled><option value="">Todos los municipios</option></select></div>

@@ -6,15 +6,13 @@ const configs={
  hospitalarios:{title:'Hospitalarios',description:'Encuentra servicios hospitalarios y sus datos de contacto.',serviceText:1,address:2,contact:3},
  pgp:{title:'PGP',description:'Consulta los prestadores y servicios registrados en la modalidad PGP.',type:1,serviceText:2,address:3,contact:4,typeLabel:'Tipo de PGP'}
 };
-let data=null,active=Object.hasOwn(configs,location.hash.slice(1))?location.hash.slice(1):'servicios',page=1,filtered=[],printing=false;
+let data=null,active=Object.hasOwn(configs,location.hash.slice(1))?location.hash.slice(1):'all',page=1,filtered=[],printing=false;
 const size=12;
 function element(tag,className,text){const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;}
 function options(id,values,label){const select=$(id);select.replaceChildren(new Option(label,''));[...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')).forEach(v=>select.add(new Option(v,v)));}
 function switchTab(key){
- active=key;page=1;const c=configs[key];
- document.querySelectorAll('[role=tab]').forEach(tab=>{const selected=tab.dataset.tab===key;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;});
- $('panel').setAttribute('aria-labelledby','tab-'+key);$('section-title').textContent=c.title;$('section-description').textContent=c.description;
- $('search').value='';$('search').placeholder=key==='servicios'?'Ej. odontología, nombre del prestador…':'Nombre, servicio, dirección o contacto…';
+ active=key;page=1;const c=configs[key]??{};$('category').value=key;
+ $('search').placeholder='Ej. odontología, Corozal, nombre del prestador…';
  const rows=data?.sheets[key]?.rows??[];
  for(const field of ['service','type','municipality']){
   $('filter-'+field).hidden=c[field]===undefined;
@@ -26,9 +24,10 @@ function switchTab(key){
 }
 function criteria(){return {query:$('search').value,municipality:$('municipality').value,type:$('type').value,service:$('service').value};}
 function field(dl,label,value){if(!value)return;dl.append(element('dt','',label),element('dd','',value));}
-function card(row){
- const c=configs[active],article=element('article','card'),head=element('div','card-header');head.append(element('h3','',row[0]||'Prestador sin nombre'));
- if(c.type!==undefined&&row[c.type])head.append(element('span','tag',row[c.type]));
+function card({row,key}){
+ const c=configs[key],article=element('article','card'),head=element('div','card-header');head.append(element('h3','',row[0]||'Prestador sin nombre'));
+ head.append(element('span','tag',c.title));
+ if(c.type!==undefined&&row[c.type])head.append(element('span','subtype',row[c.type]));
  const body=element('div','card-body'),dl=element('dl');
  if(c.service!==undefined)field(dl,'Servicio',row[c.service]);
  if(c.serviceText!==undefined)field(dl,'Servicios',row[c.serviceText]);
@@ -40,8 +39,9 @@ function card(row){
  article.append(head,body);return article;
 }
 function render(){
- const rows=data.sheets[active].rows;filtered=filterRows(rows,criteria(),configs[active]);
- const providers=new Set(filtered.map(r=>r[0]).filter(Boolean)).size;
+ const keys=active==='all'?Object.keys(configs):[active];
+ filtered=keys.flatMap(key=>filterRows(data.sheets[key].rows,criteria(),configs[key]).map(row=>({row,key})));
+ const providers=new Set(filtered.map(item=>item.row[0]).filter(Boolean)).size;
  $('summary').replaceChildren(element('strong','',`${filtered.length} ${filtered.length===1?'registro':'registros'}`),document.createTextNode(` · ${providers} ${providers===1?'prestador':'prestadores'}`));
  const pages=Math.max(1,Math.ceil(filtered.length/size));page=Math.min(page,pages);
  const shown=printing?filtered:filtered.slice((page-1)*size,page*size);$('results').replaceChildren(...shown.map(card));
@@ -50,7 +50,7 @@ function render(){
  $('pagination').hidden=pages===1;$('page-label').textContent=`Página ${page} de ${pages}`;$('previous').disabled=page===1;$('next').disabled=page===pages;$('print').disabled=!filtered.length;
  $('results').setAttribute('aria-busy','false');
 }
-function clearFilters(){$('search').value='';['service','type','municipality'].forEach(id=>$(id).value='');page=1;render();$('search').focus();}
+function clearFilters(){$('search').value='';history.replaceState(null,'',location.pathname);switchTab('all');['service','type','municipality'].forEach(id=>$(id).value='');page=1;render();$('search').focus();}
 async function load(){
  $('retry').hidden=true;
  try{
@@ -61,17 +61,14 @@ async function load(){
   try{const response=await fetch('/data/snapshot.json');if(!response.ok)throw Error();data=await response.json();data.source='snapshot';}catch{data=null;}
  }
  if(!data){$('results').replaceChildren(element('div','empty','No pudimos cargar el directorio. Comprueba tu conexión y vuelve a intentar.'));$('data-status').textContent='El directorio no está disponible.';$('summary').textContent='Sin datos disponibles';$('results').setAttribute('aria-busy','false');$('retry').hidden=false;return;}
- Object.keys(configs).forEach(key=>$('count-'+key).textContent=data.sheets[key].rows.length);
+ 
  $('filters').querySelectorAll('input,select,button').forEach(el=>el.disabled=false);
  const date=new Date(data.loadedAt).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'});
  $('data-status').textContent=data.source==='live'?`Datos consultados en Google Sheets: ${date}.`:`Copia del directorio del ${date}. No se pudo comprobar si hay cambios más recientes.`;
  $('retry').hidden=data.source==='live';switchTab(active);
 }
-document.querySelectorAll('[role=tab]').forEach(tab=>{
- tab.addEventListener('click',()=>{history.replaceState(null,'','#'+tab.dataset.tab);switchTab(tab.dataset.tab);});
- tab.addEventListener('keydown',event=>{const tabs=[...document.querySelectorAll('[role=tab]')];let index=tabs.indexOf(tab);if(event.key==='ArrowRight')index=(index+1)%tabs.length;else if(event.key==='ArrowLeft')index=(index+tabs.length-1)%tabs.length;else if(event.key==='Home')index=0;else if(event.key==='End')index=tabs.length-1;else return;event.preventDefault();tabs[index].click();tabs[index].focus();});
-});
-window.addEventListener('hashchange',()=>{const key=location.hash.slice(1);if(Object.hasOwn(configs,key))switchTab(key);});
+$('category').addEventListener('change',()=>{history.replaceState(null,'',location.pathname+($('category').value==='all'?'':'#'+$('category').value));switchTab($('category').value);});
+window.addEventListener('hashchange',()=>{const key=location.hash.slice(1);switchTab(Object.hasOwn(configs,key)?key:'all');});
 let timer;$('search').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>{if(data){page=1;render();}},180);});
 ['service','type','municipality'].forEach(id=>$(id).addEventListener('change',()=>{page=1;render();}));
  $('filters').addEventListener('submit',event=>{event.preventDefault();if(data){page=1;render();}});$('clear').onclick=clearFilters;
