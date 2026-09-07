@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Red de prestadores · FOMAG Sucre</title>
+ <meta name="description" content="Consulta servicios de salud, operadores farmacéuticos, atención hospitalaria y PGP de la red de prestadores de Sucre.">
+ <meta name="theme-color" content="#073d55">
+ <link rel="stylesheet" href="/styles.css"><script type="module" src="/app.js"></script>
+</head>
+<body>
+ <a class="skip" href="#search">Ir a la búsqueda</a>
+ <header class="top"><div class="top-inner"><img src="https://www.fomag.gov.co/wp-content/uploads/2025/04/Logo-color.png" alt="FOMAG" width="168" height="56"><div class="top-title">Red de prestadores<span>Sucre · 2026</span></div><a href="https://docs.google.com/spreadsheets/d/1jJseGFsbLr52BJ79ohkOYXXLiC27G_e___2-_2aPYg4/edit" target="_blank" rel="noopener" class="source-link">Consultar fuente <span aria-hidden="true">↗</span></a></div></header>
+ <main>
+  <div class="intro"><div><p class="eyebrow">DIRECTORIO DE ATENCIÓN</p><h1>Encuentra dónde atenderte</h1><p>Consulta el servicio que necesitas y los datos de contacto del prestador.</p></div><div class="network-meta"><span class="status-dot"></span>Red de Sucre</div></div>
+  <nav class="tabs" role="tablist" aria-label="Redes de atención">
+   <button role="tab" id="tab-servicios" aria-controls="panel" aria-selected="true" data-tab="servicios"><span>Servicios por prestador</span><span class="tab-count" id="count-servicios">—</span></button>
+   <button role="tab" id="tab-farmacias" aria-controls="panel" aria-selected="false" tabindex="-1" data-tab="farmacias"><span>Operadores farmacéuticos</span><span class="tab-count" id="count-farmacias">—</span></button>
+   <button role="tab" id="tab-hospitalarios" aria-controls="panel" aria-selected="false" tabindex="-1" data-tab="hospitalarios"><span>Hospitalarios</span><span class="tab-count" id="count-hospitalarios">—</span></button>
+   <button role="tab" id="tab-pgp" aria-controls="panel" aria-selected="false" tabindex="-1" data-tab="pgp"><span>PGP</span><span class="tab-count" id="count-pgp">—</span></button>
+  </nav>
+  <section id="panel" role="tabpanel" aria-labelledby="tab-servicios">
+   <div class="section-heading"><div><h2 id="section-title">Servicios por prestador</h2><p id="section-description">Busca una especialidad, un prestador o un municipio.</p></div><button id="print" class="button secondary" disabled>Imprimir resultados</button></div>
+   <form id="filters" class="filters" role="search">
+    <div class="search-field"><label for="search">¿Qué estás buscando?</label><div class="input-wrap"><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="Ej. odontología, nombre del prestador…" autocomplete="off" disabled></div></div>
+    <div id="filter-service" class="filter"><label for="service">Servicio</label><select id="service" disabled><option value="">Todos los servicios</option></select></div>
+    <div id="filter-type" class="filter"><label for="type">Tipo de servicio</label><select id="type" disabled><option value="">Todos los tipos</option></select></div>
+    <div id="filter-municipality" class="filter"><label for="municipality">Municipio o cobertura</label><select id="municipality" disabled><option value="">Todos los municipios</option></select></div>
+    <div class="filter-actions"><button class="button primary" type="submit" disabled>Buscar</button><button class="button text-button" type="button" id="clear" disabled>Limpiar filtros</button></div>
+   </form>
+   <div class="results-toolbar"><p id="summary" role="status" aria-live="polite">Cargando directorio…</p><span id="page-info"></span></div>
+   <div id="results" class="results" aria-busy="true"><div class="empty"><span class="spinner" aria-hidden="true"></span><h3>Cargando la red de atención</h3><p>Estamos consultando la información de las cuatro pestañas.</p></div></div>
+   <nav id="pagination" class="pagination" aria-label="Páginas de resultados" hidden><button class="button secondary" id="previous">Anterior</button><span id="page-label"></span><button class="button secondary" id="next">Siguiente</button></nav>
+  </section>
+  <aside class="data-note"><span aria-hidden="true">ⓘ</span><div><strong>Información del directorio</strong><p id="data-status">Consultando la fuente…</p><p>Los datos de dirección, contacto y cobertura se muestran como están registrados en la fuente.</p></div><button id="retry" class="button text-button" hidden>Reintentar</button></aside>
+ </main>
+ <footer><span>FOMAG · Consulta de red de prestadores</span><span>Sucre 2026</span></footer>
+</body></html>

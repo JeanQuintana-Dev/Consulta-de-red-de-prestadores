@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
+import {parseCSV,filterRows,validateSheet,municipalities} from '../lib/data.js';
+test('CSV conserva contactos, comas, saltos y comillas',()=>{assert.deepEqual(parseCSV('PRESTADOR,CONTACTO\r\n"Clínica, SAS","3101234567\n""citas"""\r\n'),[['PRESTADOR','CONTACTO'],['Clínica, SAS','3101234567\n"citas"']]);});
+test('rechaza fuentes HTML y esquemas incompletos',()=>{assert.throws(()=>validateSheet('servicios',[['<!doctype html>']]));});
+test('búsqueda ignora tildes y respeta filtros combinados',()=>{const rows=[['IPS','ODONTOLOGIA','PRIMARIO','SINCELEJO, COROZAL'],['Otra','ODONTOLOGIA','COMPLEMENTARIO','SINCELEJO']];assert.equal(filterRows(rows,{query:'odontología',municipality:'corozal',type:'PRIMARIO'},{type:2,municipality:3}).length,1);assert.equal(filterRows(rows,{municipality:'SINCÉ'},{municipality:3}).length,0);assert.equal(filterRows(rows).length,2);});
+test('cobertura separada por saltos de línea',()=>assert.deepEqual(municipalities('SINCELEJO\n COROZAL'),['SINCELEJO','COROZAL']));
+test('copia reconcilia las cuatro hojas fuente',async()=>{const data=JSON.parse(await readFile('data/snapshot.json','utf8'));assert.deepEqual(Object.values(data.sheets).map(s=>s.rows.length),[456,7,9,2]);for(const sheet of Object.values(data.sheets))for(const row of sheet.rows)assert.equal(row.length,sheet.headers.length);});
